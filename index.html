@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>How does time feel to you?</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif; background: #faf9f7; color: #1a1a18; min-height: 100vh; }
+    .header { text-align: center; padding: 2.5rem 1rem 1.5rem; }
+    .header h1 { font-size: 26px; font-weight: 500; color: #1a1a18; margin-bottom: 8px; }
+    .header p { font-size: 15px; color: #5f5e5a; line-height: 1.6; max-width: 420px; margin: 0 auto; }
+    .stations { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 14px; padding: 1rem 1.25rem; max-width: 900px; margin: 0 auto; }
+    .station-card { background: #ffffff; border: 1px solid #e5e4e0; border-radius: 14px; padding: 1.4rem; }
+    .station-top { display: flex; align-items: center; gap: 10px; margin-bottom: 1.1rem; }
+    .station-icon { width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 16px; font-weight: 500; flex-shrink: 0; }
+    .station-name { font-size: 17px; font-weight: 500; color: #1a1a18; }
+    .station-subtitle { font-size: 12px; color: #5f5e5a; margin-top: 2px; }
+    .time-row { margin-bottom: 14px; }
+    .time-label { font-size: 12px; color: #5f5e5a; margin-bottom: 7px; }
+    .stepper { display: flex; align-items: center; gap: 8px; }
+    .step-btn { width: 38px; height: 38px; border: 1px solid #d3d1c7; border-radius: 10px; background: #f1efe8; color: #1a1a18; font-size: 20px; cursor: pointer; display: flex; align-items: center; justify-content: center; user-select: none; flex-shrink: 0; line-height: 1; transition: background 0.1s; }
+    .step-btn:hover { background: #e5e3da; }
+    .step-btn:active { transform: scale(0.94); }
+    .step-val { font-size: 20px; font-weight: 500; color: #1a1a18; min-width: 52px; text-align: center; }
+    .step-unit { font-size: 12px; color: #5f5e5a; }
+    .submit-btn { width: 100%; padding: 11px; border: none; border-radius: 10px; font-size: 14px; font-weight: 500; cursor: pointer; margin-top: 4px; transition: opacity 0.15s, transform 0.1s; color: #fff; }
+    .submit-btn:hover { opacity: 0.9; }
+    .submit-btn:active { transform: scale(0.98); }
+    .submit-btn:disabled { opacity: 0.45; cursor: default; }
+    .feedback-box { margin-top: 12px; border-radius: 10px; padding: 10px 13px; font-size: 13px; line-height: 1.55; display: none; }
+    .section-divider { max-width: 900px; margin: 0.5rem auto 0; padding: 0 1.25rem; }
+    .section-title { font-size: 12px; font-weight: 500; color: #888780; text-transform: uppercase; letter-spacing: 0.07em; padding-bottom: 10px; border-bottom: 1px solid #e5e4e0; display: flex; align-items: center; gap: 8px; }
+    .live-dot { width: 7px; height: 7px; border-radius: 50%; background: #1D9E75; display: inline-block; animation: pulse 2s infinite; flex-shrink: 0; }
+    @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
+    .aggregate-area { max-width: 900px; margin: 0 auto; padding: 1.2rem 1.25rem 3rem; }
+    .agg-intro { font-size: 14px; color: #888780; margin-bottom: 1rem; font-style: italic; }
+    .agg-bars { display: flex; flex-direction: column; gap: 20px; }
+    .agg-row-header { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 8px; }
+    .agg-row-name { font-size: 14px; font-weight: 500; color: #1a1a18; display: flex; align-items: center; gap: 7px; flex-wrap: wrap; }
+    .agg-dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; flex-shrink: 0; }
+    .agg-count { font-size: 12px; color: #888780; }
+    .bar-wrap { display: flex; align-items: center; gap: 8px; margin-bottom: 5px; }
+    .bar-type { font-size: 11px; color: #888780; width: 58px; flex-shrink: 0; text-align: right; }
+    .bar-bg { flex: 1; height: 14px; background: #f1efe8; border-radius: 20px; overflow: hidden; }
+    .bar-fill { height: 100%; border-radius: 20px; transition: width 0.6s ease; }
+    .bar-num { font-size: 12px; color: #5f5e5a; width: 40px; flex-shrink: 0; }
+    .ratio-badge { display: inline-block; font-size: 11px; padding: 2px 9px; border-radius: 20px; font-weight: 500; }
+  </style>
+</head>
+<body>
+
+<div class="header">
+  <h1>How does time feel to you?</h1>
+  <p>Enter how long you actually spent at the activity, and how long it felt like.</p>
+</div>
+
+<div class="stations" id="stations"></div>
+
+<div class="section-divider">
+  <div class="section-title">
+    <span class="live-dot"></span>
+    Everyone's experience so far
+  </div>
+</div>
+<div class="aggregate-area">
+  <p class="agg-intro" id="agg-intro">Loading...</p>
+  <div class="agg-bars" id="agg-bars"></div>
+</div>
+
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+  import { getFirestore, collection, addDoc, onSnapshot, query } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyCNabUhQXMNgB5rLmTDgB8a7LBu6ASfuKM",
+    authDomain: "solsticetimelab.firebaseapp.com",
+    projectId: "solsticetimelab",
+    storageBucket: "solsticetimelab.firebasestorage.app",
+    messagingSenderId: "941162772365",
+    appId: "1:941162772365:web:541e63a6066803a5362fc4"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+
+  const STATIONS = [
+    { id: 'awe',     name: 'Awe',     desc: 'Wonder & amazement',        color: '#7F77DD', bg: '#EEEDFE', textColor: '#3C3489' },
+    { id: 'flow',    name: 'Flow',    desc: 'Deep focus & immersion',    color: '#1D9E75', bg: '#E1F5EE', textColor: '#085041' },
+    { id: 'boredom', name: 'Boredom', desc: 'Slow & uneventful',         color: '#888780', bg: '#F1EFE8', textColor: '#2C2C2A' },
+    { id: 'social',  name: 'Social',  desc: 'Connection & conversation', color: '#D4537E', bg: '#FBEAF0', textColor: '#72243E' },
+  ];
+  const ICONS = { awe: '✦', flow: '◎', boredom: '—', social: '◈' };
+
+  const state = {};
+  STATIONS.forEach(s => { state[s.id] = { actual: 10, felt: 10, submitted: false }; });
+
+  function fmt(n) { return Math.round(n); }
+
+  function buildStations() {
+    const container = document.getElementById('stations');
+    STATIONS.forEach(s => {
+      const card = document.createElement('div');
+      card.className = 'station-card';
+      card.id = 'card-' + s.id;
+      card.innerHTML = `
+        <div class="station-top">
+          <div class="station-icon" style="background:${s.bg}; color:${s.textColor};">${ICONS[s.id]}</div>
+          <div>
+            <div class="station-name">${s.name}</div>
+            <div class="station-subtitle">${s.desc}</div>
+          </div>
+        </div>
+        <div class="time-row">
+          <div class="time-label">Actual time spent</div>
+          <div class="stepper">
+            <button class="step-btn" onclick="step('${s.id}','actual',-1)">−</button>
+            <div><span class="step-val" id="actual-${s.id}">10</span> <span class="step-unit">min</span></div>
+            <button class="step-btn" onclick="step('${s.id}','actual',1)">+</button>
+          </div>
+        </div>
+        <div class="time-row">
+          <div class="time-label">How long it felt</div>
+          <div class="stepper">
+            <button class="step-btn" onclick="step('${s.id}','felt',-1)">−</button>
+            <div><span class="step-val" id="felt-${s.id}">10</span> <span class="step-unit">min</span></div>
+            <button class="step-btn" onclick="step('${s.id}','felt',1)">+</button>
+          </div>
+        </div>
+        <button class="submit-btn" id="btn-${s.id}" onclick="submitData('${s.id}')" style="background:${s.color};">Share my experience</button>
+        <div class="feedback-box" id="fb-${s.id}"></div>
+      `;
+      container.appendChild(card);
+    });
+  }
+
+  window.step = function(id, field, delta) {
+    if (state[id].submitted) return;
+    const newVal = Math.max(1, state[id][field] + delta);
+    state[id][field] = newVal;
+    document.getElementById(field + '-' + id).textContent = newVal;
+  };
+
+  window.submitData = async function(id) {
+    if (state[id].submitted) return;
+    const actual = state[id].actual;
+    const felt = state[id].felt;
+    state[id].submitted = true;
+
+    const btn = document.getElementById('btn-' + id);
+    btn.disabled = true;
+    btn.textContent = 'Submitting...';
+
+    try {
+      await addDoc(collection(db, 'submissions'), {
+        station: id,
+        actual: actual,
+        felt: felt,
+        timestamp: Date.now()
+      });
+      btn.textContent = 'Submitted ✓';
+    } catch (e) {
+      btn.textContent = 'Error — try again';
+      btn.disabled = false;
+      state[id].submitted = false;
+      return;
+    }
+
+    const ratio = felt / actual;
+    const s = STATIONS.find(x => x.id === id);
+    const fb = document.getElementById('fb-' + id);
+    fb.style.display = 'block';
+    fb.style.background = s.bg;
+    fb.style.color = s.textColor;
+    fb.style.border = '1px solid ' + s.color + '44';
+
+    let msg = '';
+    if (ratio > 1.3)       msg = `Time stretched for you — it felt ${fmt((ratio - 1) * 100)}% longer than it was.`;
+    else if (ratio < 0.75) msg = `Time flew! It felt ${fmt((1 - ratio) * 100)}% shorter than it was.`;
+    else                   msg = `Your sense of time was pretty close to reality.`;
+    fb.textContent = msg;
+  };
+
+  function renderAggregate(docs) {
+    const intro = document.getElementById('agg-intro');
+    const barsDiv = document.getElementById('agg-bars');
+
+    const totals = {};
+    STATIONS.forEach(s => { totals[s.id] = { actualSum: 0, feltSum: 0, count: 0 }; });
+
+    docs.forEach(doc => {
+      const d = doc.data();
+      if (totals[d.station]) {
+        totals[d.station].actualSum += d.actual;
+        totals[d.station].feltSum += d.felt;
+        totals[d.station].count += 1;
+      }
+    });
+
+    const totalCount = Object.values(totals).reduce((a, b) => a + b.count, 0);
+    if (totalCount === 0) {
+      intro.textContent = 'Submissions will appear here once people start sharing.';
+      intro.style.display = 'block';
+      barsDiv.innerHTML = '';
+      return;
+    }
+    intro.style.display = 'none';
+
+    const maxVal = Math.max(...STATIONS.flatMap(s => [
+      totals[s.id].count > 0 ? totals[s.id].actualSum / totals[s.id].count : 0,
+      totals[s.id].count > 0 ? totals[s.id].feltSum / totals[s.id].count : 0
+    ]), 1);
+
+    barsDiv.innerHTML = '';
+    STATIONS.forEach(s => {
+      const agg = totals[s.id];
+      if (agg.count === 0) return;
+      const avgActual = agg.actualSum / agg.count;
+      const avgFelt = agg.feltSum / agg.count;
+      const ratio = avgFelt / avgActual;
+      let badgeText, badgeBg, badgeColor;
+      if (ratio > 1.2)       { badgeText = 'time stretches'; badgeBg = '#FAECE7'; badgeColor = '#993C1D'; }
+      else if (ratio < 0.83) { badgeText = 'time flies';     badgeBg = '#E1F5EE'; badgeColor = '#085041'; }
+      else                   { badgeText = 'time matches';   badgeBg = '#F1EFE8'; badgeColor = '#444441'; }
+
+      const row = document.createElement('div');
+      row.className = 'agg-row';
+      row.innerHTML = `
+        <div class="agg-row-header">
+          <div class="agg-row-name">
+            <span class="agg-dot" style="background:${s.color}"></span>
+            ${s.name}
+            <span class="ratio-badge" style="background:${badgeBg};color:${badgeColor}">${badgeText}</span>
+          </div>
+          <span class="agg-count">${agg.count} ${agg.count === 1 ? 'person' : 'people'}</span>
+        </div>
+        <div class="bar-wrap">
+          <span class="bar-type">actual</span>
+          <div class="bar-bg"><div class="bar-fill" style="width:${fmt(avgActual / maxVal * 100)}%;background:${s.color};opacity:0.4;"></div></div>
+          <span class="bar-num">${fmt(avgActual)} min</span>
+        </div>
+        <div class="bar-wrap">
+          <span class="bar-type">felt like</span>
+          <div class="bar-bg"><div class="bar-fill" style="width:${fmt(avgFelt / maxVal * 100)}%;background:${s.color};"></div></div>
+          <span class="bar-num">${fmt(avgFelt)} min</span>
+        </div>
+      `;
+      barsDiv.appendChild(row);
+    });
+  }
+
+  buildStations();
+
+  const q = query(collection(db, 'submissions'));
+  onSnapshot(q, (snapshot) => {
+    renderAggregate(snapshot.docs);
+  });
+</script>
+</body>
+</html>
