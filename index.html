@@ -7,45 +7,71 @@
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif; background: #faf9f7; color: #1a1a18; min-height: 100vh; }
+
     .header { text-align: center; padding: 2.5rem 1rem 1.5rem; }
     .header h1 { font-size: 26px; font-weight: 500; color: #1a1a18; margin-bottom: 8px; }
     .header p { font-size: 15px; color: #5f5e5a; line-height: 1.6; max-width: 420px; margin: 0 auto; }
-    .stations { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 14px; padding: 1rem 1.25rem; max-width: 900px; margin: 0 auto; }
+
+    .stations {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+      padding: 1rem 1.25rem;
+      max-width: 780px;
+      margin: 0 auto;
+    }
+
     .station-card { background: #ffffff; border: 1px solid #e5e4e0; border-radius: 14px; padding: 1.4rem; }
     .station-top { display: flex; align-items: center; gap: 10px; margin-bottom: 1.1rem; }
     .station-icon { width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 16px; font-weight: 500; flex-shrink: 0; }
     .station-name { font-size: 17px; font-weight: 500; color: #1a1a18; }
     .station-subtitle { font-size: 12px; color: #5f5e5a; margin-top: 2px; }
+
     .time-row { margin-bottom: 14px; }
     .time-label { font-size: 12px; color: #5f5e5a; margin-bottom: 7px; }
     .stepper { display: flex; align-items: center; gap: 8px; }
     .step-btn { width: 38px; height: 38px; border: 1px solid #d3d1c7; border-radius: 10px; background: #f1efe8; color: #1a1a18; font-size: 20px; cursor: pointer; display: flex; align-items: center; justify-content: center; user-select: none; flex-shrink: 0; line-height: 1; transition: background 0.1s; }
     .step-btn:hover { background: #e5e3da; }
     .step-btn:active { transform: scale(0.94); }
-    .step-val { font-size: 20px; font-weight: 500; color: #1a1a18; min-width: 52px; text-align: center; }
+    .step-val { font-size: 20px; font-weight: 500; color: #1a1a18; min-width: 44px; text-align: center; }
     .step-unit { font-size: 12px; color: #5f5e5a; }
+
     .submit-btn { width: 100%; padding: 11px; border: none; border-radius: 10px; font-size: 14px; font-weight: 500; cursor: pointer; margin-top: 4px; transition: opacity 0.15s, transform 0.1s; color: #fff; }
     .submit-btn:hover { opacity: 0.9; }
     .submit-btn:active { transform: scale(0.98); }
     .submit-btn:disabled { opacity: 0.45; cursor: default; }
-    .feedback-box { margin-top: 12px; border-radius: 10px; padding: 10px 13px; font-size: 13px; line-height: 1.55; display: none; }
-    .section-divider { max-width: 900px; margin: 0.5rem auto 0; padding: 0 1.25rem; }
+
+    .feedback-box { margin-top: 12px; border-radius: 10px; padding: 12px 14px; font-size: 14px; line-height: 1.6; display: none; }
+
+    .section-divider { max-width: 780px; margin: 1.5rem auto 0; padding: 0 1.25rem; }
     .section-title { font-size: 12px; font-weight: 500; color: #888780; text-transform: uppercase; letter-spacing: 0.07em; padding-bottom: 10px; border-bottom: 1px solid #e5e4e0; display: flex; align-items: center; gap: 8px; }
     .live-dot { width: 7px; height: 7px; border-radius: 50%; background: #1D9E75; display: inline-block; animation: pulse 2s infinite; flex-shrink: 0; }
     @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
-    .aggregate-area { max-width: 900px; margin: 0 auto; padding: 1.2rem 1.25rem 3rem; }
+
+    .aggregate-area { max-width: 780px; margin: 0 auto; padding: 1.2rem 1.25rem 3rem; }
     .agg-intro { font-size: 14px; color: #888780; margin-bottom: 1rem; font-style: italic; }
-    .agg-bars { display: flex; flex-direction: column; gap: 20px; }
-    .agg-row-header { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 8px; }
-    .agg-row-name { font-size: 14px; font-weight: 500; color: #1a1a18; display: flex; align-items: center; gap: 7px; flex-wrap: wrap; }
-    .agg-dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; flex-shrink: 0; }
+    .agg-stations { display: flex; flex-direction: column; gap: 28px; }
+
+    .agg-station-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+    .agg-station-name { font-size: 14px; font-weight: 500; color: #1a1a18; display: flex; align-items: center; gap: 7px; }
+    .agg-dot { width: 9px; height: 9px; border-radius: 50%; display: inline-block; flex-shrink: 0; }
     .agg-count { font-size: 12px; color: #888780; }
-    .bar-wrap { display: flex; align-items: center; gap: 8px; margin-bottom: 5px; }
-    .bar-type { font-size: 11px; color: #888780; width: 58px; flex-shrink: 0; text-align: right; }
-    .bar-bg { flex: 1; height: 14px; background: #f1efe8; border-radius: 20px; overflow: hidden; }
-    .bar-fill { height: 100%; border-radius: 20px; transition: width 0.6s ease; }
-    .bar-num { font-size: 12px; color: #5f5e5a; width: 40px; flex-shrink: 0; }
-    .ratio-badge { display: inline-block; font-size: 11px; padding: 2px 9px; border-radius: 20px; font-weight: 500; }
+
+    .spectrum-wrap { position: relative; padding-bottom: 26px; }
+    .spectrum-track { position: relative; height: 6px; background: #e5e4e0; border-radius: 20px; margin: 10px 4px 0; }
+    .spectrum-fill-left { position: absolute; top: 0; right: 50%; height: 100%; border-radius: 20px 0 0 20px; transition: width 0.5s ease; }
+    .spectrum-fill-right { position: absolute; top: 0; left: 50%; height: 100%; border-radius: 0 20px 20px 0; transition: width 0.5s ease; }
+    .spectrum-center { position: absolute; top: -4px; left: 50%; transform: translateX(-50%); width: 2px; height: 14px; background: #b4b2a9; border-radius: 2px; }
+
+    .dots-layer { position: absolute; top: -5px; left: 0; right: 0; height: 16px; }
+    .person-dot { position: absolute; width: 12px; height: 12px; border-radius: 50%; border: 2px solid #faf9f7; transform: translateX(-50%); transition: left 0.5s ease; }
+
+    .avg-marker { position: absolute; top: -9px; width: 4px; height: 24px; border-radius: 2px; transform: translateX(-50%); transition: left 0.5s ease; }
+    .avg-marker::after { content: attr(data-label); position: absolute; top: 27px; left: 50%; transform: translateX(-50%); font-size: 10px; font-weight: 500; white-space: nowrap; color: #5f5e5a; }
+
+    .spectrum-labels { display: flex; justify-content: space-between; margin-top: 8px; }
+    .spectrum-label { font-size: 11px; color: #888780; }
+    .spectrum-label-center { font-size: 11px; color: #b4b2a9; text-align: center; flex: 1; }
   </style>
 </head>
 <body>
@@ -64,8 +90,8 @@
   </div>
 </div>
 <div class="aggregate-area">
-  <p class="agg-intro" id="agg-intro">Loading...</p>
-  <div class="agg-bars" id="agg-bars"></div>
+  <p class="agg-intro" id="agg-intro">Submissions will appear here once people start sharing.</p>
+  <div class="agg-stations" id="agg-stations"></div>
 </div>
 
 <script type="module">
@@ -84,12 +110,62 @@
   const app = initializeApp(firebaseConfig);
   const db = getFirestore(app);
 
+  const THRESHOLD = 0.10;
+
+  // Feedback logic:
+  // expanded = felt > actual by >10%  (distortion > 0.10)
+  // compressed = felt < actual by >10% (distortion < -0.10)
+  // matched = within 10%
+  //
+  // prediction: 'expand' = awe/boredom, 'compress' = flow, 'wildcard' = social
+  // matched + expected direction → vivid station-specific message
+  // mismatched or near-zero → neutral message
+
   const STATIONS = [
-    { id: 'awe',     name: 'Awe',     desc: 'Wonder & amazement',        color: '#7F77DD', bg: '#EEEDFE', textColor: '#3C3489' },
-    { id: 'flow',    name: 'Flow',    desc: 'Deep focus & immersion',    color: '#1D9E75', bg: '#E1F5EE', textColor: '#085041' },
-    { id: 'boredom', name: 'Boredom', desc: 'Slow & uneventful',         color: '#888780', bg: '#F1EFE8', textColor: '#2C2C2A' },
-    { id: 'social',  name: 'Social',  desc: 'Connection & conversation', color: '#D4537E', bg: '#FBEAF0', textColor: '#72243E' },
+    {
+      id: 'awe', name: 'Awe', desc: 'Wonder & amazement',
+      color: '#7F77DD', bg: '#EEEDFE', textColor: '#3C3489',
+      prediction: 'expand',
+      msg: {
+        match_expand:    'The moment opened up — time seemed abundant.',
+        match_compress:  'Time flew by.',   // shouldn't happen but covered
+        mismatch_compress: 'Time flew by.',
+        mismatch_expand:   'Time slowed down.',
+        neutral:         'Time matched reality pretty closely.',
+      }
+    },
+    {
+      id: 'flow', name: 'Flow', desc: 'Deep focus & immersion',
+      color: '#1D9E75', bg: '#E1F5EE', textColor: '#085041',
+      prediction: 'compress',
+      msg: {
+        match_compress:  'Time slipped away without you noticing.',
+        mismatch_expand: 'Time slowed down.',
+        neutral:         'Time matched reality pretty closely.',
+      }
+    },
+    {
+      id: 'boredom', name: 'Boredom', desc: 'Slow & uneventful',
+      color: '#888780', bg: '#F1EFE8', textColor: '#2C2C2A',
+      prediction: 'expand',
+      msg: {
+        match_expand:    'Every minute stretched — time seemed to slow to a crawl.',
+        mismatch_compress: 'Time flew by.',
+        neutral:         'Time matched reality pretty closely.',
+      }
+    },
+    {
+      id: 'social', name: 'Social', desc: 'Connection & conversation',
+      color: '#D4537E', bg: '#FBEAF0', textColor: '#72243E',
+      prediction: 'wildcard',
+      msg: {
+        expand:   'Time slowed down.',
+        compress: 'Time flew by.',
+        neutral:  'Time matched reality pretty closely.',
+      }
+    },
   ];
+
   const ICONS = { awe: '✦', flow: '◎', boredom: '—', social: '◈' };
 
   const state = {};
@@ -97,12 +173,42 @@
 
   function fmt(n) { return Math.round(n); }
 
+  function getDistortion(actual, felt) {
+    return (felt - actual) / actual;
+  }
+
+  function getFeedbackMessage(station, distortion) {
+    const expanded  = distortion >  THRESHOLD;
+    const compressed = distortion < -THRESHOLD;
+    const neutral   = !expanded && !compressed;
+    const m = station.msg;
+
+    if (station.prediction === 'wildcard') {
+      if (expanded)   return m.expand;
+      if (compressed) return m.compress;
+      return m.neutral;
+    }
+
+    if (neutral) return m.neutral;
+
+    if (station.prediction === 'expand') {
+      if (expanded)   return m.match_expand;
+      if (compressed) return m.mismatch_compress;
+    }
+
+    if (station.prediction === 'compress') {
+      if (compressed) return m.match_compress;
+      if (expanded)   return m.mismatch_expand;
+    }
+
+    return m.neutral;
+  }
+
   function buildStations() {
     const container = document.getElementById('stations');
     STATIONS.forEach(s => {
       const card = document.createElement('div');
       card.className = 'station-card';
-      card.id = 'card-' + s.id;
       card.innerHTML = `
         <div class="station-top">
           <div class="station-icon" style="background:${s.bg}; color:${s.textColor};">${ICONS[s.id]}</div>
@@ -144,19 +250,18 @@
   window.submitData = async function(id) {
     if (state[id].submitted) return;
     const actual = state[id].actual;
-    const felt = state[id].felt;
+    const felt   = state[id].felt;
     state[id].submitted = true;
 
     const btn = document.getElementById('btn-' + id);
     btn.disabled = true;
     btn.textContent = 'Submitting...';
 
+    const distortion = getDistortion(actual, felt);
+
     try {
       await addDoc(collection(db, 'submissions'), {
-        station: id,
-        actual: actual,
-        felt: felt,
-        timestamp: Date.now()
+        station: id, actual, felt, distortion, timestamp: Date.now()
       });
       btn.textContent = 'Submitted ✓';
     } catch (e) {
@@ -166,95 +271,91 @@
       return;
     }
 
-    const ratio = felt / actual;
-    const s = STATIONS.find(x => x.id === id);
-    const fb = document.getElementById('fb-' + id);
-    fb.style.display = 'block';
+    const s   = STATIONS.find(x => x.id === id);
+    const msg = getFeedbackMessage(s, distortion);
+    const fb  = document.getElementById('fb-' + id);
+    fb.style.display  = 'block';
     fb.style.background = s.bg;
-    fb.style.color = s.textColor;
-    fb.style.border = '1px solid ' + s.color + '44';
-
-    let msg = '';
-    if (ratio > 1.3)       msg = `Time stretched for you — it felt ${fmt((ratio - 1) * 100)}% longer than it was.`;
-    else if (ratio < 0.75) msg = `Time flew! It felt ${fmt((1 - ratio) * 100)}% shorter than it was.`;
-    else                   msg = `Your sense of time was pretty close to reality.`;
-    fb.textContent = msg;
+    fb.style.color    = s.textColor;
+    fb.style.border   = '1px solid ' + s.color + '55';
+    fb.textContent    = msg;
   };
 
-  function renderAggregate(docs) {
-    const intro = document.getElementById('agg-intro');
-    const barsDiv = document.getElementById('agg-bars');
+  function pctToLeft(distortion) {
+    const clamped = Math.max(-1, Math.min(1, distortion));
+    return 50 + clamped * 48;
+  }
 
-    const totals = {};
-    STATIONS.forEach(s => { totals[s.id] = { actualSum: 0, feltSum: 0, count: 0 }; });
+  function renderAggregate(docs) {
+    const intro     = document.getElementById('agg-intro');
+    const container = document.getElementById('agg-stations');
+
+    const byStation = {};
+    STATIONS.forEach(s => { byStation[s.id] = []; });
 
     docs.forEach(doc => {
       const d = doc.data();
-      if (totals[d.station]) {
-        totals[d.station].actualSum += d.actual;
-        totals[d.station].feltSum += d.felt;
-        totals[d.station].count += 1;
+      if (byStation[d.station] !== undefined) {
+        byStation[d.station].push(getDistortion(d.actual, d.felt));
       }
     });
 
-    const totalCount = Object.values(totals).reduce((a, b) => a + b.count, 0);
+    const totalCount = Object.values(byStation).reduce((a, b) => a + b.length, 0);
     if (totalCount === 0) {
-      intro.textContent = 'Submissions will appear here once people start sharing.';
       intro.style.display = 'block';
-      barsDiv.innerHTML = '';
+      container.innerHTML = '';
       return;
     }
     intro.style.display = 'none';
+    container.innerHTML = '';
 
-    const maxVal = Math.max(...STATIONS.flatMap(s => [
-      totals[s.id].count > 0 ? totals[s.id].actualSum / totals[s.id].count : 0,
-      totals[s.id].count > 0 ? totals[s.id].feltSum / totals[s.id].count : 0
-    ]), 1);
-
-    barsDiv.innerHTML = '';
     STATIONS.forEach(s => {
-      const agg = totals[s.id];
-      if (agg.count === 0) return;
-      const avgActual = agg.actualSum / agg.count;
-      const avgFelt = agg.feltSum / agg.count;
-      const ratio = avgFelt / avgActual;
-      let badgeText, badgeBg, badgeColor;
-      if (ratio > 1.2)       { badgeText = 'time stretches'; badgeBg = '#FAECE7'; badgeColor = '#993C1D'; }
-      else if (ratio < 0.83) { badgeText = 'time flies';     badgeBg = '#E1F5EE'; badgeColor = '#085041'; }
-      else                   { badgeText = 'time matches';   badgeBg = '#F1EFE8'; badgeColor = '#444441'; }
+      const vals = byStation[s.id];
+      if (vals.length === 0) return;
+
+      const avg     = vals.reduce((a, b) => a + b, 0) / vals.length;
+      const avgLeft = pctToLeft(avg);
+      const avgPct  = fmt(Math.abs(avg) * 100);
+      const avgLabel = avg > THRESHOLD ? `+${avgPct}%` : avg < -THRESHOLD ? `−${avgPct}%` : `~0%`;
+
+      const dotsHTML = vals.map(v => {
+        const left = pctToLeft(v);
+        return `<div class="person-dot" style="left:${left}%;background:${s.color};opacity:0.6;"></div>`;
+      }).join('');
 
       const row = document.createElement('div');
-      row.className = 'agg-row';
+      row.className = 'agg-station';
       row.innerHTML = `
-        <div class="agg-row-header">
-          <div class="agg-row-name">
+        <div class="agg-station-header">
+          <div class="agg-station-name">
             <span class="agg-dot" style="background:${s.color}"></span>
             ${s.name}
-            <span class="ratio-badge" style="background:${badgeBg};color:${badgeColor}">${badgeText}</span>
           </div>
-          <span class="agg-count">${agg.count} ${agg.count === 1 ? 'person' : 'people'}</span>
+          <span class="agg-count">${vals.length} ${vals.length === 1 ? 'person' : 'people'}</span>
         </div>
-        <div class="bar-wrap">
-          <span class="bar-type">actual</span>
-          <div class="bar-bg"><div class="bar-fill" style="width:${fmt(avgActual / maxVal * 100)}%;background:${s.color};opacity:0.4;"></div></div>
-          <span class="bar-num">${fmt(avgActual)} min</span>
-        </div>
-        <div class="bar-wrap">
-          <span class="bar-type">felt like</span>
-          <div class="bar-bg"><div class="bar-fill" style="width:${fmt(avgFelt / maxVal * 100)}%;background:${s.color};"></div></div>
-          <span class="bar-num">${fmt(avgFelt)} min</span>
+        <div class="spectrum-wrap">
+          <div class="spectrum-track">
+            <div class="spectrum-fill-left" style="width:${avg < 0 ? Math.min(48, Math.abs(avg) * 48) : 0}%;background:${s.color};opacity:0.2;"></div>
+            <div class="spectrum-fill-right" style="width:${avg > 0 ? Math.min(48, avg * 48) : 0}%;background:${s.color};opacity:0.2;"></div>
+            <div class="spectrum-center"></div>
+            <div class="dots-layer">${dotsHTML}</div>
+            <div class="avg-marker" style="left:${avgLeft}%;background:${s.color};" data-label="${avgLabel}"></div>
+          </div>
+          <div class="spectrum-labels">
+            <span class="spectrum-label">time flew</span>
+            <span class="spectrum-label-center">matched reality</span>
+            <span class="spectrum-label">time dragged</span>
+          </div>
         </div>
       `;
-      barsDiv.appendChild(row);
+      container.appendChild(row);
     });
   }
 
   buildStations();
 
   const q = query(collection(db, 'submissions'));
-  onSnapshot(q, (snapshot) => {
-    renderAggregate(snapshot.docs);
-  });
+  onSnapshot(q, snapshot => renderAggregate(snapshot.docs));
 </script>
 </body>
 </html>
