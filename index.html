@@ -112,56 +112,49 @@
 
   const THRESHOLD = 0.10;
 
-  // Feedback logic:
-  // expanded = felt > actual by >10%  (distortion > 0.10)
-  // compressed = felt < actual by >10% (distortion < -0.10)
-  // matched = within 10%
-  //
-  // prediction: 'expand' = awe/boredom, 'compress' = flow, 'wildcard' = social
-  // matched + expected direction → vivid station-specific message
-  // mismatched or near-zero → neutral message
+  // Distortion: positive = time expanded (dragged), negative = time compressed (flew)
+  // Spectrum: left = time dragged, right = time flew
+  // pctToLeft: distortion > 0 → left side, distortion < 0 → right side
 
   const STATIONS = [
     {
       id: 'awe', name: 'Awe', desc: 'Wonder & amazement',
       color: '#7F77DD', bg: '#EEEDFE', textColor: '#3C3489',
       prediction: 'expand',
-      msg: {
-        match_expand:    'The moment opened up — time seemed abundant.',
-        match_compress:  'Time flew by.',   // shouldn't happen but covered
-        mismatch_compress: 'Time flew by.',
-        mismatch_expand:   'Time slowed down.',
-        neutral:         'Time matched reality pretty closely.',
+      getFeedback(pct, expanded, compressed) {
+        if (expanded)   return `The moment opened up — time seemed abundant, stretching about ${pct}% beyond the clock!`;
+        if (compressed) return `Time flew by — it felt about ${pct}% shorter than it actually was!`;
+        return `Time matched reality pretty closely — a balanced moment.`;
       }
     },
     {
       id: 'flow', name: 'Flow', desc: 'Deep focus & immersion',
       color: '#1D9E75', bg: '#E1F5EE', textColor: '#085041',
       prediction: 'compress',
-      msg: {
-        match_compress:  'Time slipped away without you noticing.',
-        mismatch_expand: 'Time slowed down.',
-        neutral:         'Time matched reality pretty closely.',
+      getFeedback(pct, expanded, compressed) {
+        if (compressed) return `Time slipped away without you noticing — it felt about ${pct}% shorter than it actually was!`;
+        if (expanded)   return `Time slowed down — it felt about ${pct}% longer than it actually was!`;
+        return `Time matched reality pretty closely — a balanced moment.`;
       }
     },
     {
       id: 'boredom', name: 'Boredom', desc: 'Slow & uneventful',
       color: '#888780', bg: '#F1EFE8', textColor: '#2C2C2A',
       prediction: 'expand',
-      msg: {
-        match_expand:    'Every minute stretched — time seemed to slow to a crawl.',
-        mismatch_compress: 'Time flew by.',
-        neutral:         'Time matched reality pretty closely.',
+      getFeedback(pct, expanded, compressed) {
+        if (expanded)   return `Every minute stretched — time seemed to slow to a crawl, feeling about ${pct}% longer than it was!`;
+        if (compressed) return `Time flew by — it felt about ${pct}% shorter than it actually was!`;
+        return `Time matched reality pretty closely — a balanced moment.`;
       }
     },
     {
       id: 'social', name: 'Social', desc: 'Connection & conversation',
       color: '#D4537E', bg: '#FBEAF0', textColor: '#72243E',
       prediction: 'wildcard',
-      msg: {
-        expand:   'Time slowed down.',
-        compress: 'Time flew by.',
-        neutral:  'Time matched reality pretty closely.',
+      getFeedback(pct, expanded, compressed) {
+        if (expanded)   return `Time slowed down — it felt about ${pct}% longer than it actually was!`;
+        if (compressed) return `Time flew by — it felt about ${pct}% shorter than it actually was!`;
+        return `Time matched reality pretty closely — a balanced moment.`;
       }
     },
   ];
@@ -175,33 +168,6 @@
 
   function getDistortion(actual, felt) {
     return (felt - actual) / actual;
-  }
-
-  function getFeedbackMessage(station, distortion) {
-    const expanded  = distortion >  THRESHOLD;
-    const compressed = distortion < -THRESHOLD;
-    const neutral   = !expanded && !compressed;
-    const m = station.msg;
-
-    if (station.prediction === 'wildcard') {
-      if (expanded)   return m.expand;
-      if (compressed) return m.compress;
-      return m.neutral;
-    }
-
-    if (neutral) return m.neutral;
-
-    if (station.prediction === 'expand') {
-      if (expanded)   return m.match_expand;
-      if (compressed) return m.mismatch_compress;
-    }
-
-    if (station.prediction === 'compress') {
-      if (compressed) return m.match_compress;
-      if (expanded)   return m.mismatch_expand;
-    }
-
-    return m.neutral;
   }
 
   function buildStations() {
@@ -258,6 +224,9 @@
     btn.textContent = 'Submitting...';
 
     const distortion = getDistortion(actual, felt);
+    const absPct     = fmt(Math.abs(distortion) * 100);
+    const expanded   = distortion >  THRESHOLD;
+    const compressed = distortion < -THRESHOLD;
 
     try {
       await addDoc(collection(db, 'submissions'), {
@@ -272,18 +241,20 @@
     }
 
     const s   = STATIONS.find(x => x.id === id);
-    const msg = getFeedbackMessage(s, distortion);
+    const msg = s.getFeedback(absPct, expanded, compressed);
     const fb  = document.getElementById('fb-' + id);
-    fb.style.display  = 'block';
+    fb.style.display    = 'block';
     fb.style.background = s.bg;
-    fb.style.color    = s.textColor;
-    fb.style.border   = '1px solid ' + s.color + '55';
-    fb.textContent    = msg;
+    fb.style.color      = s.textColor;
+    fb.style.border     = '1px solid ' + s.color + '55';
+    fb.textContent      = msg;
   };
 
+  // Spectrum: left = time dragged (distortion > 0), right = time flew (distortion < 0)
+  // So we flip: pctToLeft maps positive distortion to left side
   function pctToLeft(distortion) {
     const clamped = Math.max(-1, Math.min(1, distortion));
-    return 50 + clamped * 48;
+    return 50 - clamped * 48; // flipped: positive → left
   }
 
   function renderAggregate(docs) {
@@ -316,12 +287,16 @@
       const avg     = vals.reduce((a, b) => a + b, 0) / vals.length;
       const avgLeft = pctToLeft(avg);
       const avgPct  = fmt(Math.abs(avg) * 100);
-      const avgLabel = avg > THRESHOLD ? `+${avgPct}%` : avg < -THRESHOLD ? `−${avgPct}%` : `~0%`;
+      const avgLabel = avg > THRESHOLD ? `dragged +${avgPct}%` : avg < -THRESHOLD ? `flew ${avgPct}%` : `~matched`;
 
       const dotsHTML = vals.map(v => {
         const left = pctToLeft(v);
         return `<div class="person-dot" style="left:${left}%;background:${s.color};opacity:0.6;"></div>`;
       }).join('');
+
+      // fill: avg > 0 (dragged) → fills left of center; avg < 0 (flew) → fills right of center
+      const fillLeft  = avg > 0 ? Math.min(48, avg * 48) : 0;
+      const fillRight = avg < 0 ? Math.min(48, Math.abs(avg) * 48) : 0;
 
       const row = document.createElement('div');
       row.className = 'agg-station';
@@ -335,16 +310,16 @@
         </div>
         <div class="spectrum-wrap">
           <div class="spectrum-track">
-            <div class="spectrum-fill-left" style="width:${avg < 0 ? Math.min(48, Math.abs(avg) * 48) : 0}%;background:${s.color};opacity:0.2;"></div>
-            <div class="spectrum-fill-right" style="width:${avg > 0 ? Math.min(48, avg * 48) : 0}%;background:${s.color};opacity:0.2;"></div>
+            <div class="spectrum-fill-left" style="width:${fillLeft}%;background:${s.color};opacity:0.2;"></div>
+            <div class="spectrum-fill-right" style="width:${fillRight}%;background:${s.color};opacity:0.2;"></div>
             <div class="spectrum-center"></div>
             <div class="dots-layer">${dotsHTML}</div>
             <div class="avg-marker" style="left:${avgLeft}%;background:${s.color};" data-label="${avgLabel}"></div>
           </div>
           <div class="spectrum-labels">
-            <span class="spectrum-label">time flew</span>
-            <span class="spectrum-label-center">matched reality</span>
             <span class="spectrum-label">time dragged</span>
+            <span class="spectrum-label-center">matched reality</span>
+            <span class="spectrum-label">time flew</span>
           </div>
         </div>
       `;
