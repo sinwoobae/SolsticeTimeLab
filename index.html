@@ -16,7 +16,7 @@
       display: grid;
       grid-template-columns: repeat(2, minmax(0, 1fr));
       gap: 14px;
-      padding: 1rem 1.25rem;
+      padding: 1rem 1.25rem 3rem;
       max-width: 780px;
       margin: 0 auto;
     }
@@ -42,36 +42,6 @@
     .submit-btn:disabled { opacity: 0.45; cursor: default; }
 
     .feedback-box { margin-top: 12px; border-radius: 10px; padding: 12px 14px; font-size: 14px; line-height: 1.6; display: none; }
-
-    .section-divider { max-width: 780px; margin: 1.5rem auto 0; padding: 0 1.25rem; }
-    .section-title { font-size: 12px; font-weight: 500; color: #888780; text-transform: uppercase; letter-spacing: 0.07em; padding-bottom: 10px; border-bottom: 1px solid #e5e4e0; display: flex; align-items: center; gap: 8px; }
-    .live-dot { width: 7px; height: 7px; border-radius: 50%; background: #1D9E75; display: inline-block; animation: pulse 2s infinite; flex-shrink: 0; }
-    @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
-
-    .aggregate-area { max-width: 780px; margin: 0 auto; padding: 1.2rem 1.25rem 3rem; }
-    .agg-intro { font-size: 14px; color: #888780; margin-bottom: 1rem; font-style: italic; }
-    .agg-stations { display: flex; flex-direction: column; gap: 28px; }
-
-    .agg-station-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
-    .agg-station-name { font-size: 14px; font-weight: 500; color: #1a1a18; display: flex; align-items: center; gap: 7px; }
-    .agg-dot { width: 9px; height: 9px; border-radius: 50%; display: inline-block; flex-shrink: 0; }
-    .agg-count { font-size: 12px; color: #888780; }
-
-    .spectrum-wrap { position: relative; padding-bottom: 26px; }
-    .spectrum-track { position: relative; height: 6px; background: #e5e4e0; border-radius: 20px; margin: 10px 4px 0; }
-    .spectrum-fill-left { position: absolute; top: 0; right: 50%; height: 100%; border-radius: 20px 0 0 20px; transition: width 0.5s ease; }
-    .spectrum-fill-right { position: absolute; top: 0; left: 50%; height: 100%; border-radius: 0 20px 20px 0; transition: width 0.5s ease; }
-    .spectrum-center { position: absolute; top: -4px; left: 50%; transform: translateX(-50%); width: 2px; height: 14px; background: #b4b2a9; border-radius: 2px; }
-
-    .dots-layer { position: absolute; top: -5px; left: 0; right: 0; height: 16px; }
-    .person-dot { position: absolute; width: 12px; height: 12px; border-radius: 50%; border: 2px solid #faf9f7; transform: translateX(-50%); transition: left 0.5s ease; }
-
-    .avg-marker { position: absolute; top: -9px; width: 4px; height: 24px; border-radius: 2px; transform: translateX(-50%); transition: left 0.5s ease; }
-    .avg-marker::after { content: attr(data-label); position: absolute; top: 27px; left: 50%; transform: translateX(-50%); font-size: 10px; font-weight: 500; white-space: nowrap; color: #5f5e5a; }
-
-    .spectrum-labels { display: flex; justify-content: space-between; margin-top: 8px; }
-    .spectrum-label { font-size: 11px; color: #888780; }
-    .spectrum-label-center { font-size: 11px; color: #b4b2a9; text-align: center; flex: 1; }
   </style>
 </head>
 <body>
@@ -83,20 +53,9 @@
 
 <div class="stations" id="stations"></div>
 
-<div class="section-divider">
-  <div class="section-title">
-    <span class="live-dot"></span>
-    Everyone's experience so far
-  </div>
-</div>
-<div class="aggregate-area">
-  <p class="agg-intro" id="agg-intro">Submissions will appear here once people start sharing.</p>
-  <div class="agg-stations" id="agg-stations"></div>
-</div>
-
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-  import { getFirestore, collection, addDoc, onSnapshot, query } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+  import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
   const firebaseConfig = {
     apiKey: "AIzaSyCNabUhQXMNgB5rLmTDgB8a7LBu6ASfuKM",
@@ -108,19 +67,14 @@
   };
 
   const app = initializeApp(firebaseConfig);
-  const db = getFirestore(app);
+  const db  = getFirestore(app);
 
   const THRESHOLD = 0.10;
-
-  // Distortion: positive = time expanded (dragged), negative = time compressed (flew)
-  // Spectrum: left = time dragged, right = time flew
-  // pctToLeft: distortion > 0 → left side, distortion < 0 → right side
 
   const STATIONS = [
     {
       id: 'awe', name: 'Awe', desc: 'Wonder & amazement',
       color: '#7F77DD', bg: '#EEEDFE', textColor: '#3C3489',
-      prediction: 'expand',
       getFeedback(pct, expanded, compressed) {
         if (expanded)   return `The moment opened up — time seemed abundant, stretching about ${pct}% beyond the clock!`;
         if (compressed) return `Time flew by — it felt about ${pct}% shorter than it actually was!`;
@@ -130,7 +84,6 @@
     {
       id: 'flow', name: 'Flow', desc: 'Deep focus & immersion',
       color: '#1D9E75', bg: '#E1F5EE', textColor: '#085041',
-      prediction: 'compress',
       getFeedback(pct, expanded, compressed) {
         if (compressed) return `Time slipped away without you noticing — it felt about ${pct}% shorter than it actually was!`;
         if (expanded)   return `Time slowed down — it felt about ${pct}% longer than it actually was!`;
@@ -140,7 +93,6 @@
     {
       id: 'boredom', name: 'Boredom', desc: 'Slow & uneventful',
       color: '#888780', bg: '#F1EFE8', textColor: '#2C2C2A',
-      prediction: 'expand',
       getFeedback(pct, expanded, compressed) {
         if (expanded)   return `Every minute stretched — time seemed to slow to a crawl, feeling about ${pct}% longer than it was!`;
         if (compressed) return `Time flew by — it felt about ${pct}% shorter than it actually was!`;
@@ -150,7 +102,6 @@
     {
       id: 'social', name: 'Social', desc: 'Connection & conversation',
       color: '#D4537E', bg: '#FBEAF0', textColor: '#72243E',
-      prediction: 'wildcard',
       getFeedback(pct, expanded, compressed) {
         if (expanded)   return `Time slowed down — it felt about ${pct}% longer than it actually was!`;
         if (compressed) return `Time flew by — it felt about ${pct}% shorter than it actually was!`;
@@ -160,15 +111,11 @@
   ];
 
   const ICONS = { awe: '✦', flow: '◎', boredom: '—', social: '◈' };
-
   const state = {};
   STATIONS.forEach(s => { state[s.id] = { actual: 10, felt: 10, submitted: false }; });
 
   function fmt(n) { return Math.round(n); }
-
-  function getDistortion(actual, felt) {
-    return (felt - actual) / actual;
-  }
+  function getDistortion(actual, felt) { return (felt - actual) / actual; }
 
   function buildStations() {
     const container = document.getElementById('stations');
@@ -250,87 +197,7 @@
     fb.textContent      = msg;
   };
 
-  // Spectrum: left = time dragged (distortion > 0), right = time flew (distortion < 0)
-  // So we flip: pctToLeft maps positive distortion to left side
-  function pctToLeft(distortion) {
-    const clamped = Math.max(-1, Math.min(1, distortion));
-    return 50 - clamped * 48; // flipped: positive → left
-  }
-
-  function renderAggregate(docs) {
-    const intro     = document.getElementById('agg-intro');
-    const container = document.getElementById('agg-stations');
-
-    const byStation = {};
-    STATIONS.forEach(s => { byStation[s.id] = []; });
-
-    docs.forEach(doc => {
-      const d = doc.data();
-      if (byStation[d.station] !== undefined) {
-        byStation[d.station].push(getDistortion(d.actual, d.felt));
-      }
-    });
-
-    const totalCount = Object.values(byStation).reduce((a, b) => a + b.length, 0);
-    if (totalCount === 0) {
-      intro.style.display = 'block';
-      container.innerHTML = '';
-      return;
-    }
-    intro.style.display = 'none';
-    container.innerHTML = '';
-
-    STATIONS.forEach(s => {
-      const vals = byStation[s.id];
-      if (vals.length === 0) return;
-
-      const avg     = vals.reduce((a, b) => a + b, 0) / vals.length;
-      const avgLeft = pctToLeft(avg);
-      const avgPct  = fmt(Math.abs(avg) * 100);
-      const avgLabel = avg > THRESHOLD ? `dragged +${avgPct}%` : avg < -THRESHOLD ? `flew ${avgPct}%` : `~matched`;
-
-      const dotsHTML = vals.map(v => {
-        const left = pctToLeft(v);
-        return `<div class="person-dot" style="left:${left}%;background:${s.color};opacity:0.6;"></div>`;
-      }).join('');
-
-      // fill: avg > 0 (dragged) → fills left of center; avg < 0 (flew) → fills right of center
-      const fillLeft  = avg > 0 ? Math.min(48, avg * 48) : 0;
-      const fillRight = avg < 0 ? Math.min(48, Math.abs(avg) * 48) : 0;
-
-      const row = document.createElement('div');
-      row.className = 'agg-station';
-      row.innerHTML = `
-        <div class="agg-station-header">
-          <div class="agg-station-name">
-            <span class="agg-dot" style="background:${s.color}"></span>
-            ${s.name}
-          </div>
-          <span class="agg-count">${vals.length} ${vals.length === 1 ? 'person' : 'people'}</span>
-        </div>
-        <div class="spectrum-wrap">
-          <div class="spectrum-track">
-            <div class="spectrum-fill-left" style="width:${fillLeft}%;background:${s.color};opacity:0.2;"></div>
-            <div class="spectrum-fill-right" style="width:${fillRight}%;background:${s.color};opacity:0.2;"></div>
-            <div class="spectrum-center"></div>
-            <div class="dots-layer">${dotsHTML}</div>
-            <div class="avg-marker" style="left:${avgLeft}%;background:${s.color};" data-label="${avgLabel}"></div>
-          </div>
-          <div class="spectrum-labels">
-            <span class="spectrum-label">time dragged</span>
-            <span class="spectrum-label-center">matched reality</span>
-            <span class="spectrum-label">time flew</span>
-          </div>
-        </div>
-      `;
-      container.appendChild(row);
-    });
-  }
-
   buildStations();
-
-  const q = query(collection(db, 'submissions'));
-  onSnapshot(q, snapshot => renderAggregate(snapshot.docs));
 </script>
 </body>
 </html>
