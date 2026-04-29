@@ -22,35 +22,16 @@
       gap: 2vh;
     }
 
-    /* HEADER */
     .header {
       display: flex;
       align-items: baseline;
       justify-content: space-between;
     }
-    .header-title {
-      font-size: 2vw;
-      font-weight: 400;
-      color: #f0ede6;
-      letter-spacing: -0.01em;
-    }
-    .header-sub {
-      font-size: 1.1vw;
-      color: #6b6960;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-    .live-dot {
-      width: 8px; height: 8px;
-      border-radius: 50%;
-      background: #1D9E75;
-      display: inline-block;
-      animation: pulse 2s infinite;
-    }
+    .header-title { font-size: 2vw; font-weight: 400; color: #f0ede6; letter-spacing: -0.01em; }
+    .header-sub { font-size: 1.1vw; color: #6b6960; display: flex; align-items: center; gap: 8px; }
+    .live-dot { width: 8px; height: 8px; border-radius: 50%; background: #1D9E75; display: inline-block; animation: pulse 2s infinite; }
     @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.25} }
 
-    /* STATIONS GRID */
     .stations-grid {
       display: grid;
       grid-template-columns: repeat(4, 1fr);
@@ -68,123 +49,34 @@
       gap: 2vh;
     }
 
-    .station-header {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
-    .station-icon {
-      width: 2.8vw; height: 2.8vw;
-      border-radius: 50%;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 1.2vw;
-      font-weight: 500;
-      flex-shrink: 0;
-    }
-    .station-name {
-      font-size: 1.6vw;
-      font-weight: 500;
-      color: #f0ede6;
-    }
-    .station-desc {
-      font-size: 0.85vw;
-      color: #6b6960;
-      margin-top: 2px;
-    }
+    .station-header { display: flex; align-items: center; gap: 12px; }
+    .station-icon { width: 2.8vw; height: 2.8vw; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.2vw; font-weight: 500; flex-shrink: 0; }
+    .station-name { font-size: 1.6vw; font-weight: 500; color: #f0ede6; }
+    .station-desc { font-size: 0.85vw; color: #6b6960; margin-top: 2px; }
 
-    /* SPECTRUM */
     .spectrum-section { flex: 1; display: flex; flex-direction: column; justify-content: center; gap: 1.2vh; }
 
-    .spectrum-labels {
-      display: flex;
-      justify-content: space-between;
-      font-size: 0.8vw;
-      color: #6b6960;
-    }
+    .spectrum-labels { display: flex; justify-content: space-between; font-size: 0.8vw; color: #6b6960; }
     .spectrum-label-center { text-align: center; flex: 1; color: #4a4a45; }
 
     .spectrum-track-wrap { position: relative; height: 2.5vh; display: flex; align-items: center; }
-    .spectrum-track {
-      position: relative;
-      width: 100%;
-      height: 8px;
-      background: #2a2a26;
-      border-radius: 20px;
-      overflow: visible;
-    }
-    .spectrum-fill-left {
-      position: absolute; top: 0; right: 50%; height: 100%;
-      border-radius: 20px 0 0 20px;
-      transition: width 0.7s ease;
-    }
-    .spectrum-fill-right {
-      position: absolute; top: 0; left: 50%; height: 100%;
-      border-radius: 0 20px 20px 0;
-      transition: width 0.7s ease;
-    }
-    .spectrum-center-line {
-      position: absolute; top: -5px; left: 50%;
-      transform: translateX(-50%);
-      width: 2px; height: 18px;
-      background: #4a4a45; border-radius: 2px;
-    }
-    .dots-layer {
-      position: absolute; top: -7px; left: 0; right: 0; height: 22px;
-    }
-    .person-dot {
-      position: absolute;
-      width: 14px; height: 14px;
-      border-radius: 50%;
-      border: 2px solid #1a1a17;
-      transform: translateX(-50%);
-      transition: left 0.6s ease;
-    }
-    .avg-marker {
-      position: absolute; top: -10px;
-      width: 5px; height: 28px;
-      border-radius: 3px;
-      transform: translateX(-50%);
-      transition: left 0.6s ease;
-    }
+    .spectrum-track { position: relative; width: 100%; height: 8px; background: #2a2a26; border-radius: 20px; overflow: visible; }
+    .spectrum-fill-left { position: absolute; top: 0; right: 50%; height: 100%; border-radius: 20px 0 0 20px; transition: width 0.7s ease; }
+    .spectrum-fill-right { position: absolute; top: 0; left: 50%; height: 100%; border-radius: 0 20px 20px 0; transition: width 0.7s ease; }
+    .spectrum-center-line { position: absolute; top: -5px; left: 50%; transform: translateX(-50%); width: 2px; height: 18px; background: #4a4a45; border-radius: 2px; }
+    .dots-layer { position: absolute; top: -7px; left: 0; right: 0; height: 22px; }
+    .person-dot { position: absolute; width: 14px; height: 14px; border-radius: 50%; border: 2px solid #1a1a17; transform: translateX(-50%); transition: left 0.6s ease; }
+    .avg-marker { position: absolute; top: -10px; width: 5px; height: 28px; border-radius: 3px; transform: translateX(-50%); transition: left 0.6s ease; }
 
-    /* STATS */
-    .stats-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-end;
-    }
-    .stat-block { }
+    .stats-row { display: flex; justify-content: space-between; align-items: flex-end; }
     .stat-label { font-size: 0.7vw; color: #6b6960; margin-bottom: 3px; text-transform: uppercase; letter-spacing: 0.06em; }
     .stat-value { font-size: 1.4vw; font-weight: 500; color: #f0ede6; }
     .stat-unit { font-size: 0.75vw; color: #6b6960; margin-left: 3px; }
+    .count-badge { font-size: 0.85vw; color: #6b6960; background: #2a2a26; border-radius: 20px; padding: 3px 10px; }
 
-    .count-badge {
-      font-size: 0.85vw;
-      color: #6b6960;
-      background: #2a2a26;
-      border-radius: 20px;
-      padding: 3px 10px;
-    }
+    .no-data { flex: 1; display: flex; align-items: center; justify-content: center; font-size: 0.9vw; color: #3a3a36; font-style: italic; }
 
-    .no-data {
-      flex: 1;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 0.9vw;
-      color: #3a3a36;
-      font-style: italic;
-    }
-
-    /* FOOTER */
-    .footer {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      gap: 6px;
-      font-size: 0.8vw;
-      color: #3a3a36;
-    }
+    .footer { display: flex; justify-content: center; align-items: center; gap: 6px; font-size: 0.8vw; color: #3a3a36; }
     .footer-url { color: #4a4a45; }
   </style>
 </head>
@@ -192,10 +84,7 @@
 <div class="page">
   <div class="header">
     <div class="header-title">How does time feel to you?</div>
-    <div class="header-sub">
-      <span class="live-dot"></span>
-      Live responses
-    </div>
+    <div class="header-sub"><span class="live-dot"></span> Live responses</div>
   </div>
 
   <div class="stations-grid" id="stations-grid"></div>
@@ -236,7 +125,7 @@
   function getDistortion(actual, felt) { return (felt - actual) / actual; }
   function pctToLeft(distortion) {
     const clamped = Math.max(-1, Math.min(1, distortion));
-    return 50 - clamped * 46; // dragged=left, flew=right
+    return 50 - clamped * 46;
   }
 
   function buildPanels() {
@@ -253,7 +142,7 @@
             <div class="station-desc">${s.desc}</div>
           </div>
         </div>
-        <div id="content-${s.id}" class="no-data-wrap">
+        <div id="content-${s.id}">
           <div class="no-data">Waiting for responses...</div>
         </div>
       `;
@@ -271,9 +160,12 @@
     const avg     = vals.reduce((a, b) => a + b, 0) / vals.length;
     const avgLeft = pctToLeft(avg);
     const avgPct  = fmt(Math.abs(avg) * 100);
-    const avgLabel = avg > THRESHOLD ? `+${avgPct}% longer` : avg < -THRESHOLD ? `${avgPct}% shorter` : `matched`;
 
-    const avgActual = vals.length; // just count — we store distortion
+    let directionWord, avgDisplay;
+    if (avg > THRESHOLD)       { directionWord = 'stretched';    avgDisplay = `+${avgPct}%`; }
+    else if (avg < -THRESHOLD) { directionWord = 'flew';         avgDisplay = `−${avgPct}%`; }
+    else                       { directionWord = 'on the dot';   avgDisplay = `on the dot`; }
+
     const fillLeft  = avg > 0 ? Math.min(46, avg * 46) : 0;
     const fillRight = avg < 0 ? Math.min(46, Math.abs(avg) * 46) : 0;
 
@@ -282,14 +174,11 @@
       return `<div class="person-dot" style="left:${left}%;background:${s.color};opacity:0.7;"></div>`;
     }).join('');
 
-    const directionWord = avg > THRESHOLD ? 'dragged' : avg < -THRESHOLD ? 'flew' : 'matched reality';
-    const avgDisplay = avg > THRESHOLD ? `+${avgPct}%` : avg < -THRESHOLD ? `−${avgPct}%` : `~0%`;
-
     content.className = 'spectrum-section';
     content.innerHTML = `
       <div class="spectrum-labels">
-        <span>time dragged</span>
-        <span class="spectrum-label-center">matched reality</span>
+        <span>time stretched</span>
+        <span class="spectrum-label-center">on the dot</span>
         <span>time flew</span>
       </div>
       <div class="spectrum-track-wrap">
@@ -302,9 +191,11 @@
         </div>
       </div>
       <div class="stats-row">
-        <div class="stat-block">
-          <div class="stat-label">Average distortion</div>
-          <div class="stat-value" style="color:${s.textColor}">${avgDisplay}<span class="stat-unit">${directionWord}</span></div>
+        <div>
+          <div class="stat-label">Group average</div>
+          <div class="stat-value" style="color:${s.textColor}">
+            ${avgDisplay === 'on the dot' ? 'on the dot' : `${avgDisplay}<span class="stat-unit">${directionWord}</span>`}
+          </div>
         </div>
         <div class="count-badge">${vals.length} ${vals.length === 1 ? 'response' : 'responses'}</div>
       </div>
@@ -317,14 +208,12 @@
   onSnapshot(q, snapshot => {
     const byStation = {};
     STATIONS.forEach(s => { byStation[s.id] = []; });
-
     snapshot.docs.forEach(doc => {
       const d = doc.data();
       if (byStation[d.station] !== undefined) {
         byStation[d.station].push(getDistortion(d.actual, d.felt));
       }
     });
-
     STATIONS.forEach(s => renderStation(s, byStation[s.id]));
   });
 </script>

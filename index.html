@@ -78,7 +78,7 @@
       getFeedback(pct, expanded, compressed) {
         if (expanded)   return `The moment opened up — time seemed abundant, stretching about ${pct}% beyond the clock!`;
         if (compressed) return `Time flew by — it felt about ${pct}% shorter than it actually was!`;
-        return `Time matched reality pretty closely — a balanced moment.`;
+        return `Time was right on the dot — a balanced moment.`;
       }
     },
     {
@@ -87,7 +87,7 @@
       getFeedback(pct, expanded, compressed) {
         if (compressed) return `Time slipped away without you noticing — it felt about ${pct}% shorter than it actually was!`;
         if (expanded)   return `Time slowed down — it felt about ${pct}% longer than it actually was!`;
-        return `Time matched reality pretty closely — a balanced moment.`;
+        return `Time was right on the dot — a balanced moment.`;
       }
     },
     {
@@ -96,16 +96,16 @@
       getFeedback(pct, expanded, compressed) {
         if (expanded)   return `Every minute stretched — time seemed to slow to a crawl, feeling about ${pct}% longer than it was!`;
         if (compressed) return `Time flew by — it felt about ${pct}% shorter than it actually was!`;
-        return `Time matched reality pretty closely — a balanced moment.`;
+        return `Time was right on the dot — a balanced moment.`;
       }
     },
     {
       id: 'social', name: 'Social', desc: 'Connection & conversation',
       color: '#D4537E', bg: '#FBEAF0', textColor: '#72243E',
       getFeedback(pct, expanded, compressed) {
-        if (expanded)   return `Time slowed down — it felt about ${pct}% longer than it actually was!`;
+        if (expanded)   return `Time stretched — it felt about ${pct}% longer than it actually was!`;
         if (compressed) return `Time flew by — it felt about ${pct}% shorter than it actually was!`;
-        return `Time matched reality pretty closely — a balanced moment.`;
+        return `Time was right on the dot — a balanced moment.`;
       }
     },
   ];
