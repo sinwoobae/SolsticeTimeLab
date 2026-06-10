@@ -6,9 +6,9 @@
   <title>Solstice Time Lab — Live Display</title>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    html, body { height: 100%; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif; background: #0e0e0c; color: #f0ede6; overflow: hidden; }
+    html, body { height: 100%; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif; background: #0e0e0c; color: #f0ede6; overflow: auto; }
 
-    .page { height: 100vh; display: grid; grid-template-rows: auto 1fr auto; padding: 2vw 2.5vw; gap: 1.5vh; }
+    .page { min-height: 100vh; display: grid; grid-template-rows: auto 1fr auto auto; padding: 2vw 2.5vw; gap: 1.5vh; }
 
     /* ── TOP BAR ── */
     .topbar { display: flex; align-items: center; justify-content: space-between; }
