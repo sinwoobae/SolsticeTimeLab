@@ -8,7 +8,7 @@
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     html, body { height: 100%; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif; background: #0e0e0c; color: #f0ede6; overflow: auto; }
 
-    .page { min-height: 100vh; display: grid; grid-template-rows: auto 1fr auto auto; padding: 1.5vw 2.5vw; gap: 0.8vh; }
+    .page { min-height: 100vh; display: grid; grid-template-rows: auto auto auto auto; padding: 1.5vw 2.5vw; gap: 0.8vh; }
 
     /* ── TOP BAR ── */
     .topbar { display: flex; align-items: center; justify-content: space-between; }
@@ -26,9 +26,9 @@
     @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.25} }
 
     /* ── STATIONS GRID ── */
-    .stations-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.2vw; align-items: stretch; }
+    .stations-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.2vw; align-items: start; }
 
-    .station-panel { background: #1a1a17; border: 1px solid #2a2a26; border-radius: 14px; padding: 1.2vh 1.5vw; display: flex; flex-direction: column; gap: 0.8vh; }
+    .station-panel { background: #1a1a17; border: 1px solid #2a2a26; border-radius: 14px; padding: 1.2vh 1.5vw; display: flex; flex-direction: column; gap: 0.8vh; height: auto; }
 
     .station-header { display: flex; align-items: center; gap: 0.8vw; }
     .station-icon-wrap { width: 2.6vw; height: 2.6vw; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
@@ -36,7 +36,7 @@
     .station-name { font-size: 1.4vw; font-weight: 600; color: #f0ede6; }
     .station-desc { font-size: 0.72vw; color: #6b6960; margin-top: 2px; line-height: 1.4; }
 
-    .spectrum-section { flex: 1; display: flex; flex-direction: column; justify-content: center; gap: 1vh; }
+    .spectrum-section { display: flex; flex-direction: column; justify-content: flex-end; gap: 0.6vh; margin-top: auto; }
     .spectrum-labels  { display: flex; justify-content: space-between; font-size: 0.72vw; color: #6b6960; }
     .spectrum-label-center { text-align: center; flex: 1; color: #4a4a45; }
 
